@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A2 Restaurant – Pure Veg Fast Food & North Indian</title>
+<meta name="theme-color" content="#1c1410">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Hind:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script src="https://unpkg.com/lucide@0.441.0/dist/umd/lucide.min.js"></script>
+<script>
+tailwind.config = {
+  theme: { extend: {
+    fontFamily: { head: ['"Baloo 2"', 'sans-serif'], body: ['Hind', 'sans-serif'] },
+    colors: { bg: '#1c1410', card: '#2a1f18', line: '#3d2d22', saffron: '#f2a13a', chili: '#e0533a', cream: '#f6e9d4', mute: '#b5a28c' }
+  } }
+}
+</script>
+<style>
+  html, body { background:#1c1410; }
+  body { font-family: Hind, sans-serif; color:#f6e9d4; -webkit-tap-highlight-color: transparent; padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px)); }
+  .no-scrollbar::-webkit-scrollbar { display:none; } .no-scrollbar { scrollbar-width:none; }
+  .drawer { transform: translateY(100%); transition: transform .3s ease; }
+  .drawer.open { transform: translateY(0); }
+  .overlay { opacity:0; pointer-events:none; transition: opacity .3s; }
+  .overlay.open { opacity:1; pointer-events:auto; }
+  input:focus, textarea:focus, button:focus-visible { outline: 2px solid #f2a13a; outline-offset: 1px; }
+  @media (prefers-reduced-motion: reduce) { .drawer, .overlay { transition:none; } }
+</style>
+</head>
+<body class="font-body">
+
+<!-- HEADER -->
+<header class="px-4 pt-6 pb-4 border-b border-line" style="padding-top: calc(1.5rem + env(safe-area-inset-top, 0px));">
+  <div class="max-w-2xl mx-auto flex items-center justify-between gap-3">
+    <div>
+      <h1 class="font-head font-extrabold text-3xl leading-none text-saffron">A2 Restaurant</h1>
+      <p class="text-mute text-sm mt-1">Pure Veg Fast Food &amp; North Indian</p>
+    </div>
+    <div class="flex items-center gap-2 border border-green-600 rounded px-2 py-1" title="100% Pure Veg">
+      <span class="w-3 h-3 rounded-full bg-green-500 inline-block"></span>
+      <span class="text-xs text-green-400 font-semibold">Pure Veg</span>
+    </div>
+  </div>
+</header>
+
+<!-- CATEGORY FILTER -->
+<nav class="sticky top-0 z-30 bg-bg/95 backdrop-blur border-b border-line" style="padding-top: env(safe-area-inset-top, 0px);">
+  <div id="tabs" class="max-w-2xl mx-auto flex gap-2 overflow-x-auto no-scrollbar px-4 py-3"></div>
+</nav>
+
+<!-- MENU -->
+<main class="max-w-2xl mx-auto px-4 pt-4">
+  <div id="menu" class="grid gap-3"></div>
+  <p class="text-center text-mute text-xs mt-8">Sabhi prices final hain. Payment sirf online (UPI).</p>
+</main>
+
+<!-- STICKY CART BAR -->
+<div id="cartBar" class="fixed left-0 right-0 bottom-0 z-40 hidden" style="padding: 0 12px calc(12px + env(safe-area-inset-bottom, 0px));">
+  <button id="openCart" class="max-w-2xl mx-auto w-full flex items-center justify-between bg-saffron text-bg rounded-xl px-4 py-3 shadow-lg font-head font-bold text-lg">
+    <span class="flex items-center gap-2"><i data-lucide="shopping-bag" class="w-5 h-5"></i><span id="barCount">0 items</span></span>
+    <span class="flex items-center gap-2">View Cart &nbsp;₹<span id="barTotal">0</span></span>
+  </button>
+</div>
+
+<!-- DRAWER -->
+<div id="overlay" class="overlay fixed inset-0 z-50 bg-black/70"></div>
+<section id="drawer" class="drawer fixed left-0 right-0 bottom-0 z-50 bg-bg border-t border-line rounded-t-2xl max-h-[92vh] flex flex-col" role="dialog" aria-label="Your cart">
+  <div class="max-w-2xl w-full mx-auto flex flex-col min-h-0">
+    <div class="flex items-center justify-between px-4 py-3 border-b border-line">
+      <h2 class="font-head font-bold text-xl">Aapka Order</h2>
+      <button id="closeCart" aria-label="Close cart" class="p-2 rounded-full bg-card"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+
+    <div class="overflow-y-auto px-4 py-3 min-h-0" style="padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));">
+      <div id="cartItems" class="divide-y divide-line"></div>
+
+      <div class="flex justify-between items-center py-3 border-t border-line mt-1">
+        <span class="font-semibold">Total Amount</span>
+        <span class="font-head font-extrabold text-2xl text-saffron">₹<span id="cartTotal">0</span></span>
+      </div>
+
+      <div class="space-y-3 mt-2">
+        <div>
+          <label for="custName" class="text-sm text-mute">Aapka Naam</label>
+          <input id="custName" type="text" autocomplete="name" placeholder="Jaise: Rahul Sharma" class="w-full mt-1 bg-card border border-line rounded-lg px-3 py-2.5 text-cream placeholder-mute/60">
+        </div>
+        <div>
+          <label for="custAddr" class="text-sm text-mute">Delivery Address</label>
+          <textarea id="custAddr" rows="3" autocomplete="street-address" placeholder="Ghar/Dukaan no., gali, landmark, shehar" class="w-full mt-1 bg-card border border-line rounded-lg px-3 py-2.5 text-cream placeholder-mute/60"></textarea>
+        </div>
+        <div class="flex items-start gap-2 border border-saffron/50 bg-saffron/10 rounded-lg px-3 py-2.5 text-sm">
+          <i data-lucide="smartphone" class="w-4 h-4 mt-0.5 shrink-0 text-saffron"></i>
+          <p><span class="font-semibold">Payment: Sirf Online (UPI)</span><br><span class="text-mute">Order confirm hote hi WhatsApp par UPI QR / payment link bheja jayega. Cash on Delivery available nahi hai.</span></p>
+        </div>
+        <p id="err" class="text-chili text-sm hidden"></p>
+        <button id="waBtn" class="w-full flex items-center justify-center gap-2 bg-[#25D366] text-black font-head font-bold text-lg rounded-xl py-3.5">
+          <i data-lucide="message-circle" class="w-5 h-5"></i> Order on WhatsApp
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+const WA_NUMBER = "919389205487"; // 9389205487 with India country code
+
+// Pure veg menu (A2 Restaurant, Res ID 22889798). Beverages nahi. Sirf sabse chhota variant. Sabhi prices 9 par end.
+const MENU = [
+  { id:1, cat:"Fast Food", name:"Aloo Sandwich", desc:"Masaledar aloo, grilled aur crispy", price:79 },
+  { id:2, cat:"Fast Food", name:"Veg Mayonnaise Sandwich", desc:"Veggies aur creamy mayonnaise", price:139 },
+  { id:3, cat:"Fast Food", name:"Aloo Paneer Sandwich", desc:"Aloo aur paneer ki bharpoor stuffing", price:139 },
+  { id:4, cat:"Fast Food", name:"Aloo Cheese Sandwich", desc:"Aloo masala ke saath melted cheese", price:99 },
+  { id:5, cat:"Fast Food", name:"Veg Chowmein", desc:"Tawa-tossed noodles aur taaza veggies", price:59 },
+  { id:6, cat:"Fast Food", name:"Plain Maggi", desc:"Seedhi, masaledar Maggi", price:79 },
+  { id:7, cat:"Fast Food", name:"Vegetable Maggi", desc:"Maggi mein mix veggies ka tadka", price:119 },
+  { id:8, cat:"Fast Food", name:"Butter Maggi", desc:"Makkhan mein bhuni Maggi", price:119 },
+  { id:9, cat:"Fast Food", name:"Vegetable Butter Maggi", desc:"Veggies aur makkhan, dono ek saath", price:159 },
+  { id:10, cat:"Fast Food", name:"Cheese Corn Maggi", desc:"Sweet corn aur cheese wali Maggi", price:199 },
+  { id:11, cat:"Fast Food", name:"Onion Capsicum Cheese Pizza", desc:"Pyaaz, shimla mirch aur cheese", price:89 },
+  { id:12, cat:"Fast Food", name:"Paneer Onion Cheese Pizza", desc:"Paneer, pyaaz aur extra cheese", price:119 },
+  { id:13, cat:"Fast Food", name:"Onion Capsicum Paneer Cheesy Pizza", desc:"Paneer, pyaaz, shimla mirch, cheese", price:159 },
+  { id:14, cat:"Fast Food", name:"Onion Cheese Pizza", desc:"Pyaaz aur melting cheese", price:89 },
+  { id:15, cat:"Fast Food", name:"Tomato Cheese Pizza", desc:"Taaza tamatar aur cheese", price:89 },
+  { id:16, cat:"Fast Food", name:"Capsicum Cheese Pizza", desc:"Shimla mirch aur cheese", price:89 },
+  { id:17, cat:"Fast Food", name:"Pav Bhaji", desc:"Buttery bhaji, garam pav ke saath", price:129 },
+  { id:18, cat:"Snacks", name:"Poha", desc:"Garma-garam, nimbu aur sev ke saath", price:69 },
+  { id:19, cat:"Snacks", name:"Besan Cheela", desc:"Tawa par bana, hara dhaniya chutney", price:69 },
+  { id:20, cat:"Snacks", name:"Veggies Besan Cheela", desc:"Besan cheela, andar veggies ki stuffing", price:89 },
+  { id:21, cat:"Snacks", name:"Aloo Kachori", desc:"Crispy kachori, aloo sabji ke saath", price:159 },
+  { id:22, cat:"Snacks", name:"Aloo Pyaz Kachori", desc:"Aloo-pyaaz bhari kachori, sabji ke saath", price:169 },
+  { id:23, cat:"North Indian", name:"Chole Chawal", desc:"Masaledar chole, steamed chawal par", price:129 },
+  { id:24, cat:"North Indian", name:"Chole Kulcha (2 Kulcha)", desc:"Chole ke saath 2 naram kulche", price:109 },
+  { id:25, cat:"North Indian", name:"Chole Poori (5 Pcs)", desc:"Chole ke saath 5 garam pooriyan", price:129 },
+  { id:26, cat:"North Indian", name:"Aloo Puri (5 Pcs)", desc:"Aloo sabji ke saath 5 pooriyan", price:99 },
+  { id:27, cat:"North Indian", name:"Sada Paratha", desc:"Tawa par sika sada paratha", price:59 },
+  { id:28, cat:"North Indian", name:"Lachha Paratha", desc:"Parat-dar crispy lachha paratha", price:59 },
+  { id:29, cat:"North Indian", name:"Aloo Paratha", desc:"Aloo masala bhara garam paratha", price:79 },
+  { id:30, cat:"North Indian", name:"Aloo Paratha With Curd", desc:"Aloo paratha, taaza dahi ke saath", price:89 },
+  { id:31, cat:"North Indian", name:"Aloo Pyaz Paratha", desc:"Aloo aur pyaaz ki stuffing", price:99 },
+  { id:32, cat:"North Indian", name:"Paneer Paratha", desc:"Masaledar paneer bhara paratha", price:99 },
+  { id:33, cat:"North Indian", name:"Gobhi Ka Paratha", desc:"Gobhi stuffing, ghar jaisa swaad", price:99 },
+  { id:34, cat:"North Indian", name:"Matar Ka Paratha", desc:"Hari matar bhara paratha", price:99 },
+  { id:35, cat:"North Indian", name:"Aloo Cheese Paratha", desc:"Aloo aur cheese ki stuffing", price:119 },
+  { id:36, cat:"North Indian", name:"Aloo Fry", desc:"Jeera tadka wale tale hue aloo", price:99 },
+  { id:37, cat:"North Indian", name:"Aloo Matar", desc:"Ghar jaisi aloo-matar sabji", price:79 },
+  { id:38, cat:"North Indian", name:"Matar Paneer", desc:"Matar aur paneer, rich gravy mein", price:159 },
+  { id:39, cat:"North Indian", name:"Chilli Paneer", desc:"Paneer cubes, desi chilli masala", price:219 },
+  { id:40, cat:"North Indian", name:"Paneer", desc:"Masaledar paneer sabji", price:239 },
+  { id:41, cat:"North Indian", name:"Plain Rice", desc:"Khushboodar steamed chawal", price:69 },
+  { id:42, cat:"North Indian", name:"Dal Rice", desc:"Dal tadka aur chawal", price:99 },
+  { id:43, cat:"North Indian", name:"Matar Paneer With Tawa Roti Combo", desc:"Matar paneer ke saath tawa roti", price:169 },
+  { id:44, cat:"North Indian", name:"Laccha Paratha With Matar Paneer Combo", desc:"Lachha paratha aur matar paneer", price:189 },
+  { id:45, cat:"North Indian", name:"Dal Fry With Tawa Roti Combo", desc:"Dal fry ke saath tawa roti", price:159 },
+  { id:46, cat:"North Indian", name:"Matar Aloo With Tawa Roti Combo", desc:"Matar-aloo ke saath tawa roti", price:119 },
+  { id:47, cat:"North Indian", name:"Aloo Sabji With Tawa Roti Combo", desc:"Aloo sabji ke saath tawa roti", price:99 },
+  { id:48, cat:"North Indian", name:"Aloo Fry With Paratha", desc:"Aloo fry aur garam paratha", price:129 },
+  { id:49, cat:"North Indian", name:"Thali", desc:"Dal, chawal, 4 roti, aloo matar ki sabji aur salad", price:139 },
+  { id:50, cat:"North Indian", name:"Special Thali", desc:"Dal, chawal, 4 roti, matar paneer ki sabji, salad aur raita", price:169 },
+  { id:51, cat:"North Indian", name:"Deluxe Thali", desc:"Dal, chawal, 4 roti, matar paneer, sukhi sabji, salad, raita aur meetha achar", price:229 },
+  { id:52, cat:"North Indian", name:"Jain Poori Sabji Thali", desc:"Bina pyaaz-lehsun, poori aur sabji", price:119 },
+  { id:53, cat:"North Indian", name:"Tawa Roti", desc:"Garam tawa roti", price:19 },
+  { id:54, cat:"North Indian", name:"Tawa Roti Butter", desc:"Makkhan lagi tawa roti", price:29 },
+  { id:55, cat:"North Indian", name:"Boondi Raita", desc:"Thanda dahi, boondi ke saath", price:29 },
+  { id:56, cat:"North Indian", name:"Curd", desc:"Taaza dahi", price:29 },
+  { id:57, cat:"North Indian", name:"Salad", desc:"Pyaaz, kheera, tamatar, nimbu", price:29 }
+];
+
+// ---- DISCOUNT RULE ----
+// Menu ki base price par DISCOUNT_PERCENT lagta hai, phir price sabse nazdeeki "9 wali" price par set hoti hai (49, 59, 69 ... 199).
+// Koi cut-price / MRP nahi dikhta, sirf final price. MIN_PRICE_FOR_DISCOUNT se sasti items par discount nahi lagta.
+// Discount badalna ho toh sirf DISCOUNT_PERCENT badlein (0 = koi discount nahi).
+const DISCOUNT_PERCENT = 10;
+const MIN_PRICE_FOR_DISCOUNT = 50;
+function finalPrice(base) {
+  if (!DISCOUNT_PERCENT || base < MIN_PRICE_FOR_DISCOUNT) return base;
+  const raw = base * (1 - DISCOUNT_PERCENT / 100);
+  let p = Math.round((raw - 9) / 10) * 10 + 9;   // nearest number ending in 9
+  if (p >= base) p = base - 10;                  // hamesha base se kam
+  return Math.max(p, 9);
+}
+MENU.forEach(m => { m.price = finalPrice(m.price); });
+
+const CATS = ["All", "Fast Food", "North Indian", "Snacks"];
+let activeCat = "All";
+const cart = {}; // id -> qty
+
+const $ = id => document.getElementById(id);
+const byId = id => MENU.find(m => m.id === id);
+const totalQty = () => Object.values(cart).reduce((a,b) => a+b, 0);
+const totalAmt = () => Object.entries(cart).reduce((s,[id,q]) => s + byId(+id).price * q, 0);
+
+function renderTabs() {
+  $("tabs").innerHTML = CATS.map(c => `
+    <button data-cat="${c}" class="shrink-0 px-4 py-1.5 rounded-full text-sm font-semibold border ${c===activeCat ? 'bg-saffron text-bg border-saffron' : 'bg-card text-cream border-line'}">${c}</button>`).join("");
+  $("tabs").querySelectorAll("button").forEach(b => b.onclick = () => { activeCat = b.dataset.cat; renderTabs(); renderMenu(); });
+}
+
+function qtyControl(id) {
+  const q = cart[id] || 0;
+  if (!q) return `<button data-add="${id}" class="flex items-center gap-1 bg-saffron text-bg font-bold rounded-lg px-4 py-1.5 text-sm"><i data-lucide="plus" class="w-4 h-4"></i> Add</button>`;
+  return `<div class="flex items-center gap-3 bg-card border border-saffron rounded-lg px-1 py-1">
+    <button data-sub="${id}" aria-label="Kam karein" class="w-7 h-7 flex items-center justify-center text-saffron"><i data-lucide="minus" class="w-4 h-4"></i></button>
+    <span class="font-bold w-4 text-center">${q}</span>
+    <button data-add="${id}" aria-label="Badhayein" class="w-7 h-7 flex items-center justify-center text-saffron"><i data-lucide="plus" class="w-4 h-4"></i></button>
+  </div>`;
+}
+
+function renderMenu() {
+  const items = MENU.filter(m => activeCat === "All" || m.cat === activeCat);
+  $("menu").innerHTML = items.map(m => `
+    <article class="bg-card border border-line rounded-xl p-3.5 flex items-center justify-between gap-3">
+      <div class="min-w-0">
+        <div class="flex items-center gap-2">
+          <span class="w-3.5 h-3.5 border border-green-500 flex items-center justify-center shrink-0"><span class="w-1.5 h-1.5 rounded-full bg-green-500"></span></span>
+          <h3 class="font-head font-bold text-lg leading-tight">${m.name}</h3>
+        </div>
+        <p class="text-mute text-sm mt-1">${m.desc}</p>
+        <p class="font-head font-extrabold text-xl text-saffron mt-1.5">₹${m.price}</p>
+      </div>
+      <div class="shrink-0" id="ctl-${m.id}">${qtyControl(m.id)}</div>
+    </article>`).join("");
+  bindControls($("menu"));
+  lucide.createIcons();
+}
+
+function bindControls(root) {
+  root.querySelectorAll("[data-add]").forEach(b => b.onclick = () => change(+b.dataset.add, 1));
+  root.querySelectorAll("[data-sub]").forEach(b => b.onclick = () => change(+b.dataset.sub, -1));
+}
+
+function change(id, d) {
+  const q = (cart[id] || 0) + d;
+  if (q <= 0) delete cart[id]; else cart[id] = q;
+  const ctl = $("ctl-" + id);
+  if (ctl) { ctl.innerHTML = qtyControl(id); bindControls(ctl); }
+  update();
+}
+
+function update() {
+  const n = totalQty();
+  $("cartBar").classList.toggle("hidden", n === 0);
+  $("barCount").textContent = n + (n === 1 ? " item" : " items");
+  $("barTotal").textContent = totalAmt();
+  renderCart();
+  lucide.createIcons();
+  if (n === 0) closeDrawer();
+}
+
+function renderCart() {
+  $("cartTotal").textContent = totalAmt();
+  $("cartItems").innerHTML = Object.entries(cart).map(([id, q]) => {
+    const m = byId(+id);
+    return `<div class="flex items-center justify-between gap-3 py-2.5">
+      <div class="min-w-0">
+        <p class="font-semibold leading-tight">${m.name}</p>
+        <p class="text-mute text-sm">₹${m.price} × ${q} = ₹${m.price * q}</p>
+      </div>
+      <div class="flex items-center gap-3 bg-card border border-line rounded-lg px-1 py-1 shrink-0">
+        <button data-sub="${id}" aria-label="Kam karein" class="w-7 h-7 flex items-center justify-center text-saffron"><i data-lucide="minus" class="w-4 h-4"></i></button>
+        <span class="font-bold w-4 text-center">${q}</span>
+        <button data-add="${id}" aria-label="Badhayein" class="w-7 h-7 flex items-center justify-center text-saffron"><i data-lucide="plus" class="w-4 h-4"></i></button>
+      </div>
+    </div>`;
+  }).join("");
+  bindControls($("cartItems"));
+}
+
+function openDrawer() { $("drawer").classList.add("open"); $("overlay").classList.add("open"); document.body.style.overflow = "hidden"; }
+function closeDrawer() { $("drawer").classList.remove("open"); $("overlay").classList.remove("open"); document.body.style.overflow = ""; }
+
+function showErr(msg) { const e = $("err"); e.textContent = msg; e.classList.remove("hidden"); }
+
+function sendOrder() {
+  const name = $("custName").value.trim();
+  const addr = $("custAddr").value.trim();
+  const pay = "Online Payment (UPI)";
+  $("err").classList.add("hidden");
+  if (!totalQty()) return showErr("Cart khaali hai. Pehle kuch item add karein.");
+  if (!name) { $("custName").focus(); return showErr("Kripya apna naam likhein."); }
+  if (addr.length < 8) { $("custAddr").focus(); return showErr("Kripya poora delivery address likhein."); }
+
+  const lines = Object.entries(cart).map(([id, q], i) => {
+    const m = byId(+id);
+    return `${i + 1}. ${m.name} x ${q} = ₹${m.price * q}`;
+  });
+  const msg =
+`*🍽️ NEW ORDER – A2 Restaurant*
+━━━━━━━━━━━━━━━
+${lines.join("\n")}
+━━━━━━━━━━━━━━━
+*Total Items:* ${totalQty()}
+*Total Amount:* ₹${totalAmt()}
+
+*👤 Customer Details*
+Naam: ${name}
+Address: ${addr}
+Payment: ${pay}
+
+Kripya order confirm karke UPI payment link / QR bhejein. Dhanyavaad! 🙏`;
+
+  window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`, "_blank");
+}
+
+$("openCart").onclick = openDrawer;
+$("closeCart").onclick = closeDrawer;
+$("overlay").onclick = closeDrawer;
+$("waBtn").onclick = sendOrder;
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeDrawer(); });
+
+renderTabs();
+renderMenu();
+update();
+</script>
+</body>
+</html>
